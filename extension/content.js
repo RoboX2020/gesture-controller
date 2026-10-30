@@ -1,3 +1,18 @@
+// ============================================================================
+// content.js - draws the little gesture-status badge on every web page.
+//
+// WHAT IT DOES: Chrome injects this script into each page you visit (the
+// manifest says so). It builds one small floating widget in the bottom-right
+// corner showing what the Gesture Controller is doing right now:
+//   red dot    = sleeping or disconnected
+//   orange dot = awake but no hand in view
+//   green dot  = awake and tracking your hand
+// It listens for GESTURE_UPDATE messages forwarded by background.js.
+//
+// IT NEVER touches the page itself: the widget ignores mouse clicks
+// (pointer-events: none) and sits on top of everything.
+// ============================================================================
+
 // Create Overlay
 const overlay = document.createElement('div');
 overlay.id = 'gesture-controller-overlay';
@@ -40,6 +55,7 @@ document.body.appendChild(overlay);
 
 let hideTimeout;
 
+// Every status update forwarded by background.js lands here.
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.type === 'GESTURE_UPDATE') {
         const data = request.data;
